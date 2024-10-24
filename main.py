@@ -39,22 +39,24 @@ if place:
         # The main key holds required key, eg Rain, Cloud etc..
         sky_conditions = [dict["weather"][0]["main"] for dict in filtered_data]
 
+        #obtain the image filepath for each sky_condition, ie Clear, Rain etc
         image_paths = [images[condition] for condition in sky_conditions]
 
-        sky_conditions = [f"{dict['weather'][0]['main']} {dict['weather'][0]['description']}" for dict in filtered_data]
-        print(sky_conditions)
-
-        #Translation method provides the image for each condition in sky_conditions.
-
-
+        #obtain the weather description for each dictionary in filtered_data
+        sky_description = [f"{dict['weather'][0]['description']}" for dict in filtered_data]
         dates = [dict["dt_txt"] for dict in filtered_data]
 
-        dictionary = dict(zip(dates, image_paths))
+        #zip the 2 lists for data and weather description
+        concatenated_list = [f"{date} {desc}" for date, desc in zip(dates, sky_description)]
+        print(concatenated_list)
 
-        # Iterate through the dictionary and display images
+        #create dict with concatenated list and the associated image filepaths
+        dictionary = dict(zip(concatenated_list, image_paths))
+
 
         # Convert dictionary to a list of tuples for easier iteration
         items = list(dictionary.items())
+        print(items)
 
         # Iterate through the dictionary and display images in a 4-column layout
         for i in range(0, len(items), 4):
