@@ -23,7 +23,7 @@ if place:
     if option == "Temperature":
         temperatures = [dict["main"]["temp"] for dict in filtered_data]
 
-        # note dt is the key which will give you raw date and dt_txt coverts to format like '2024-10-24 12:00:00' _
+        #dt_txt coverts to format like '2024-10-24 12:00:00' _
         dates = [dict["dt_txt"] for dict in filtered_data]
         # create a temp plot
         figure = px.line(x=dates, y=temperatures,
@@ -39,8 +39,13 @@ if place:
         # The main key holds required key, eg Rain, Cloud etc..
         sky_conditions = [dict["weather"][0]["main"] for dict in filtered_data]
 
-        #Translation method provides the image for each condition in sky_conditions.
         image_paths = [images[condition] for condition in sky_conditions]
+
+        sky_conditions = [f"{dict['weather'][0]['main']} {dict['weather'][0]['description']}" for dict in filtered_data]
+        print(sky_conditions)
+
+        #Translation method provides the image for each condition in sky_conditions.
+
 
         dates = [dict["dt_txt"] for dict in filtered_data]
 
