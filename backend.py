@@ -17,7 +17,7 @@ def get_data(place, forecast_days):
 #get data is only triggered when used directly from this file
 
 if __name__ =="__main__":
-    print(get_data(place="Manchester", forecast_days=1,))
+    print(get_data(place="zurich", forecast_days=1,))
 
 
 
