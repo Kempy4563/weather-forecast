@@ -50,17 +50,21 @@ if place:
             sky_description = [f"{dict['weather'][0]['description']}" for dict in filtered_data]
             dates = [dict["dt_txt"] for dict in filtered_data]
 
-            #zip the 2 lists for data and weather description
-            concatenated_list = [f"{date} {desc}" for date, desc in zip(dates, sky_description)]
+            #obtain the temperatures
+            temperatures = [dict["main"]["temp"] for dict in filtered_data]
+            temperatures = list(map(str, temperatures))
+
+            #zip the 3 lists
+            concatenated_list = [f"{date}:GMT {description} Temp:{temp}c" for date, description, temp in
+                                 zip(dates, sky_description, temperatures)]
+
             print(concatenated_list)
 
             #create dict with concatenated list and the associated image filepaths
             dictionary = dict(zip(concatenated_list, image_paths))
 
-
             # Convert dictionary to a list of tuples for easier iteration
             items = list(dictionary.items())
-            print(items)
 
             # Iterate through the dictionary and display images in a 4-column layout
             for i in range(0, len(items), 4):
