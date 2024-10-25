@@ -57,13 +57,15 @@ if place:
             temperatures = list(map(str, temperatures))
 
             #zip the 3 lists
-            concatenated_list = [f"{date}:GMT {description} Temp:{temp}c" for date, description, temp in
+            concatenated_list = [f"{date}:GMT {description} Temperature {temp} °c" for date, description, temp in
                                  zip(dates, sky_description, temperatures)]
 
-            print(concatenated_list)
+            formatted_weather_data = [item.replace(' Temp', '\nTemp') for item in concatenated_list]
+
+            print(formatted_weather_data)
 
             #create dict with concatenated list and the associated image filepaths
-            dictionary = dict(zip(concatenated_list, associated_filepaths))
+            dictionary = dict(zip(formatted_weather_data, associated_filepaths))
 
             # Convert dictionary to a list of tuples for easier iteration
             items = list(dictionary.items())
@@ -74,7 +76,7 @@ if place:
                 for col, (date, image_path) in zip(cols, items[i:i + 4]):
 
                     image = Image.open(image_path)
-                    col.image(image, caption=f'Weather for {date}', use_column_width=True)
+                    col.image(image, caption=f'{date}', use_column_width=True)
 
     except KeyError:
         st.write("Unknown place. Please enter a valid place..")
