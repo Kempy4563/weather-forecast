@@ -13,9 +13,7 @@ def get_data(place, forecast_days):
 
     return filtered_data
 
-
-#get data is only triggered when used directly from this file
-
+#Can only triggered when used directly from this file
 if __name__ =="__main__":
     print(get_data(place="zurich", forecast_days=1,))
 

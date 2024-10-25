@@ -36,7 +36,7 @@ if place:
 
             # note that weather is a list containing one dict therefore we
             # reference the index of that single dict with [0].
-            # The main key holds required key, eg Rain, Cloud etc..
+            # The main key holds required key, eg Rain, Cloud etc.
             sky_conditions = [dict["weather"][0]["main"] for dict in filtered_data]
 
             #obtain the image filepath for each sky_condition, ie Clear, Rain etc
