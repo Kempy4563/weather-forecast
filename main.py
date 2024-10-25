@@ -1,11 +1,7 @@
-import traceback
 from PIL import Image
 from backend import get_data
-
 import streamlit as st
 import plotly.express as px
-
-
 
 # widgets
 st.title("Weather Forecast")
