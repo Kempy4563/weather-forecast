@@ -2,6 +2,7 @@ from PIL import Image
 from backend import get_data
 import streamlit as st
 import plotly.express as px
+import glob
 
 # widgets
 st.title("Weather Forecast")
@@ -31,16 +32,21 @@ if place:
             st.plotly_chart(figure)
 
         if option == "Sky":
-            images = {"Clear": "images/clear.png", "Clouds": "images/cloud.png",
-                      "Rain": "images/rain.png", "Snow": "images/snow.png"}
 
-            # note that weather is a list containing one dict therefore we
-            # reference the index of that single dict with [0].
-            # The main key holds required key, eg Rain, Cloud etc.
-            sky_conditions = [dict["weather"][0]["main"] for dict in filtered_data]
+            file_directory = 'images/*.png'
+            images = []
 
-            #obtain the image filepath for each sky_condition, ie Clear, Rain etc
-            image_paths = [images[condition] for condition in sky_conditions]
+            for filename in glob.glob(file_directory):
+                images.append(filename)
+
+            image_codes = [dict["weather"][0]["icon"] for dict in filtered_data]
+
+            # Create a dictionary to map codes to file paths
+            code_to_filepath = {filepath.split('/')[-1].split('@')[0]: filepath for filepath in images}
+
+            associated_filepaths = [code_to_filepath[code] for code in image_codes]
+
+            print(associated_filepaths)
 
             #obtain the weather description for each dictionary in filtered_data
             sky_description = [f"{dict['weather'][0]['description']}" for dict in filtered_data]
@@ -57,7 +63,7 @@ if place:
             print(concatenated_list)
 
             #create dict with concatenated list and the associated image filepaths
-            dictionary = dict(zip(concatenated_list, image_paths))
+            dictionary = dict(zip(concatenated_list, associated_filepaths))
 
             # Convert dictionary to a list of tuples for easier iteration
             items = list(dictionary.items())
@@ -72,3 +78,4 @@ if place:
 
     except KeyError:
         st.write("Unknown place. Please enter a valid place..")
+    
