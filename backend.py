@@ -1,7 +1,6 @@
 import requests
 from datetime import datetime, timedelta
 
-
 API_KEY = "6ff8ff21eb30ff5c8581dbc331b8f893"
 
 def get_data(place, forecast_days):
@@ -13,12 +12,15 @@ def get_data(place, forecast_days):
     nr_values = 8 * forecast_days
     filtered_data = filtered_data[:nr_values]
 
-    return filtered_data
+    #get city dictionary
+    city = data["city"]
+    offset = city["timezone"]
 
-def get_time():
+    return filtered_data, offset
+
+def get_time(offset):
 
     #get timezone offset
-
 
     offset_seconds = int(offset)
 
