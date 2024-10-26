@@ -31,7 +31,7 @@ if place:
         temperature_c = temperature_k - 273.15
         timezone = coord_data['timezone']
         timezone_offset = coord_data['timezone']
-        description = coord_data['weather'][0]['description']
+        current_description = coord_data['weather'][0]['description']
         weather_image = coord_data['weather'][0]['icon']
 
         # Current UTC time
@@ -46,14 +46,23 @@ if place:
         # Printing the values
         print(f"Temperature: {temperature_c:.2f} °C")
         print(f"Timezone: {formatted_local_time}")
-        print(f"Description: {description}")
+        print(f"Description: {current_description}")
         print(f"Weather icon: {weather_image}")
 
+        # fetch the day of week
+        date_object = datetime.strptime(formatted_local_time, "%Y-%m-%d %H:%M:%S")
+        current_day_of_week = date_object.strftime("%A")
+
+        #strip the date so it represents time only
+        date_object = datetime.strptime(formatted_local_time, "%Y-%m-%d %H:%M:%S")
+        current_time_str = date_object.strftime("%H:%M:%S")
+
+        #get the filepath for the weather images
         current_weather_filepath = f"images/{weather_image}@2x.png"
         print(f"Current weather filepath: {current_weather_filepath}")
 
         # concat string with current weather details
-        local_weather_info = f"{formatted_local_time} {description} Temperature: {temperature_c:.2f} °c"
+        local_weather_info = f"{current_day_of_week} {current_time_str} {current_description} Temperature: {temperature_c:.2f} °c"
         print(local_weather_info)
 
         if option == "Temperature":
@@ -133,7 +142,7 @@ if place:
 
             # zip the 3 lists
             concatenated_list = [f"{day} {time} {description} Temperature {temp} °c" for day, time,
-                                 description, temp in zip(days_of_week, times, sky_description, temperatures)]
+            description, temp in zip(days_of_week, times, sky_description, temperatures)]
 
             print(concatenated_list)
 
