@@ -52,10 +52,9 @@ if place:
         current_weather_filepath = f"images/{weather_image}@2x.png"
         print(f"Current weather filepath: {current_weather_filepath}")
 
-        #concat string with current weather details
+        # concat string with current weather details
         local_weather_info = f"{formatted_local_time} {description} Temperature: {temperature_c:.2f} °c"
         print(local_weather_info)
-
 
         if option == "Temperature":
             temperatures = [dict["main"]["temp"] for dict in filtered_data]
@@ -100,7 +99,16 @@ if place:
 
             # get the dates
             dates = [dict["dt_txt"] for dict in filtered_data]
-            print(dates)
+
+            # Extract dates and convert to days of the week
+            days_of_week = []
+            for dt_str in dates:
+                date_object = datetime.strptime(dt_str, "%Y-%m-%d %H:%M:%S")
+                day_of_week = date_object.strftime("%A")
+                days_of_week.append(day_of_week)
+
+            # Print the list of days of the week
+            print(days_of_week)
 
             # Convert strings to datetime objects and apply the offset
             offset_seconds = offset
@@ -110,14 +118,24 @@ if place:
 
             # Convert datetime objects back to strings
             date_strings_with_offset = [date.strftime("%Y-%m-%d %H:%M:%S") for date in date_objects_with_offset]
+            print(date_strings_with_offset)
+
+            # extract just the time for the offset dates
+            times = []
+            for dt_str in date_strings_with_offset:
+                date_object = datetime.strptime(dt_str, "%Y-%m-%d %H:%M:%S")
+                time_str = date_object.strftime("%H:%M:%S")
+                times.append(time_str)
 
             # obtain the temperatures
             temperatures = [dict["main"]["temp"] for dict in filtered_data]
             temperatures = list(map(str, temperatures))
 
             # zip the 3 lists
-            concatenated_list = [f"{date} {description} Temperature {temp} °c" for date, description, temp in
-                                 zip(date_strings_with_offset, sky_description, temperatures)]
+            concatenated_list = [f"{day} {time} {description} Temperature {temp} °c" for day, time,
+                                 description, temp in zip(days_of_week, times, sky_description, temperatures)]
+
+            print(concatenated_list)
 
             formatted_weather_data = [item.replace(' Temp', '\nTemp') for item in concatenated_list]
 
@@ -127,8 +145,9 @@ if place:
             # Convert dictionary to a list of tuples for easier iteration
             items = list(dictionary.items())
 
-            #show current weather
-            st.image(current_weather_filepath, caption=f'Current weather conditions {local_weather_info}', use_column_width=True)
+            # show current weather
+            st.image(current_weather_filepath, caption=f'Current weather conditions {local_weather_info}',
+                     use_column_width=True)
 
             # Iterate through the dictionary and display images in a 4-column layout
             for i in range(0, len(items), 4):
