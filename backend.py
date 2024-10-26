@@ -14,35 +14,28 @@ def get_data(place, forecast_days):
 
     #get city dictionary
     city = data["city"]
+
+    #get place coordinates
+    co_ord = city["coord"]
+    long = co_ord['lon']
+    lat = co_ord['lat']
     offset = city["timezone"]
 
-    return filtered_data, offset
-
-def get_time(offset):
-
-    #get timezone offset
-
-    offset_seconds = int(offset)
-
-    # Current UTC time
-    utc_time = datetime.utcnow()
-
-    # Convert offset to timedelta
-    offset = timedelta(seconds=offset_seconds)
-
-    # Calculate local time
-    local_time = utc_time + offset
-
-    print("UTC Time:", utc_time)
-    print("Local Time:", local_time)
-    return local_time
+    return filtered_data, offset, long, lat
 
 
+def get_current_weather(lon, lat):
+    url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API_KEY}"
+    response = requests.get(url)
+    data = response.json()
+    coord_data = data
+
+    return coord_data
 
 #Can only triggered when used directly from this file
 if __name__ =="__main__":
-    print(get_data(place="zurich", forecast_days=1,))
+    #print(get_data(place="zurich", forecast_days=1,))
     #print(get_time(7200))
-
+    get_current_weather(8.55, 47.3667)
 
 

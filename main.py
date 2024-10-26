@@ -1,5 +1,5 @@
 from PIL import Image
-from backend import get_data
+from backend import get_data, get_current_weather
 import streamlit as st
 import plotly.express as px
 import glob
@@ -19,8 +19,43 @@ if place:
 
     try:
         # get the temp/sky data
-        filtered_data, offset = get_data(place=place, forecast_days=days)
+        filtered_data, offset, long, lat = get_data(place=place, forecast_days=days)
         print(f"the offset local timezone is {offset}")
+        print(f"the longitude is {long}")
+        print(f"the latitude is {lat}")
+
+        coord_data = get_current_weather(lon=long, lat=lat)
+        print(coord_data)
+
+        temperature_k = coord_data['main']['temp']
+        temperature_c = temperature_k - 273.15
+        timezone = coord_data['timezone']
+        timezone_offset = coord_data['timezone']
+        description = coord_data['weather'][0]['description']
+        weather_image = coord_data['weather'][0]['icon']
+
+        # Current UTC time
+        utc_time = datetime.utcnow()
+
+        # Convert UTC time to local time using the timezone offset
+        local_time = utc_time + timedelta(seconds=timezone_offset)
+
+        # Formatting the local time
+        formatted_local_time = local_time.strftime('%Y-%m-%d %H:%M:%S')
+
+        # Printing the values
+        print(f"Temperature: {temperature_c:.2f} °C")
+        print(f"Timezone: {formatted_local_time}")
+        print(f"Description: {description}")
+        print(f"Weather icon: {weather_image}")
+
+        current_weather_filepath = f"images/{weather_image}@2x.png"
+        print(f"Current weather filepath: {current_weather_filepath}")
+
+        #concat string with current weather details
+        local_weather_info = f"{formatted_local_time} {description} Temperature: {temperature_c:.2f} °c"
+        print(local_weather_info)
+
 
         if option == "Temperature":
             temperatures = [dict["main"]["temp"] for dict in filtered_data]
@@ -65,6 +100,7 @@ if place:
 
             # get the dates
             dates = [dict["dt_txt"] for dict in filtered_data]
+            print(dates)
 
             # Convert strings to datetime objects and apply the offset
             offset_seconds = offset
@@ -74,10 +110,6 @@ if place:
 
             # Convert datetime objects back to strings
             date_strings_with_offset = [date.strftime("%Y-%m-%d %H:%M:%S") for date in date_objects_with_offset]
-
-            print(date_strings_with_offset)
-
-            print(dates)
 
             # obtain the temperatures
             temperatures = [dict["main"]["temp"] for dict in filtered_data]
@@ -89,13 +121,14 @@ if place:
 
             formatted_weather_data = [item.replace(' Temp', '\nTemp') for item in concatenated_list]
 
-            print(formatted_weather_data)
-
             # create dict with concatenated list and the associated image filepaths
             dictionary = dict(zip(formatted_weather_data, associated_filepaths))
 
             # Convert dictionary to a list of tuples for easier iteration
             items = list(dictionary.items())
+
+            #show current weather
+            st.image(current_weather_filepath, caption=f'Current weather conditions {local_weather_info}', use_column_width=True)
 
             # Iterate through the dictionary and display images in a 4-column layout
             for i in range(0, len(items), 4):
