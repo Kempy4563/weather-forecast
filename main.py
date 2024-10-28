@@ -14,6 +14,7 @@ option = st.selectbox("Select data to view",
                       ("Temperature", "Sky"))
 st.subheader(f"Forecast the next {days} days for {place} in local timezone")
 
+
 # if place is provided execute below (avoids error when app is first started as no place is provided
 if place:
 
@@ -51,18 +52,18 @@ if place:
 
         # fetch the day of week
         date_object = datetime.strptime(formatted_local_time, "%Y-%m-%d %H:%M:%S")
-        current_day_of_week = date_object.strftime("%A")
+        #current_day_of_week = date_object.strftime("%A")
 
-        #strip the date so it represents time only
+        # strip the date so it represents time only
         date_object = datetime.strptime(formatted_local_time, "%Y-%m-%d %H:%M:%S")
         current_time_str = date_object.strftime("%H:%M:%S")
 
-        #get the filepath for the weather images
+        # get the filepath for the weather images
         current_weather_filepath = f"images/{weather_image}@2x.png"
         print(f"Current weather filepath: {current_weather_filepath}")
 
         # concat string with current weather details
-        local_weather_info = f"{current_day_of_week} {current_time_str} {current_description} Temperature: {temperature_c:.2f} °c"
+        local_weather_info = f"{current_time_str} {current_description} Temperature: {temperature_c:.2f} °c"
         print(local_weather_info)
 
         if option == "Temperature":
@@ -106,6 +107,8 @@ if place:
             # obtain the weather description for each dictionary in filtered_data
             sky_description = [f"{dict['weather'][0]['description']}" for dict in filtered_data]
 
+            print(sky_description)
+
             # get the dates
             dates = [dict["dt_txt"] for dict in filtered_data]
 
@@ -136,34 +139,41 @@ if place:
                 time_str = date_object.strftime("%H:%M:%S")
                 times.append(time_str)
 
+            print(times)
+
             # obtain the temperatures
             temperatures = [dict["main"]["temp"] for dict in filtered_data]
             temperatures = list(map(str, temperatures))
 
-            # zip the 3 lists
-            concatenated_list = [f"{day} {time} {description} Temperature {temp} °c" for day, time,
-            description, temp in zip(days_of_week, times, sky_description, temperatures)]
+            print(temperatures)
 
-            print(concatenated_list)
+            # zip the lists into a list of tuples
+            items = list(zip(days_of_week, times, sky_description, temperatures, associated_filepaths))
+            for item in items:
+                print(item)
 
-            formatted_weather_data = [item.replace(' Temp', '\nTemp') for item in concatenated_list]
+            st.write(f"Current weather conditions {local_weather_info}")
 
-            # create dict with concatenated list and the associated image filepaths
-            dictionary = dict(zip(formatted_weather_data, associated_filepaths))
+            col1, col2, col3 = st.columns([1, 2, 1])
 
-            # Convert dictionary to a list of tuples for easier iteration
-            items = list(dictionary.items())
+            with col1:
+                st.write("")
 
-            # show current weather
-            st.image(current_weather_filepath, caption=f'Current weather conditions {local_weather_info}',
-                     use_column_width=True)
+            with col2:
+                st.image(current_weather_filepath,
+                         use_column_width=True)
 
-            # Iterate through the dictionary and display images in a 4-column layout
+            with col3:
+                st.write("")
+
+            #Iterate through the items and display images in a 4-column layout
             for i in range(0, len(items), 4):
                 cols = st.columns(4)
-                for col, (date, image_path) in zip(cols, items[i:i + 4]):
+                for col, (day, time, sky, temp, image_path) in zip(cols, items[i:i + 4]):
                     image = Image.open(image_path)
-                    col.image(image, caption=f'{date}', use_column_width=True)
+                    caption = f'<div style="text-align:center;">{day} {time}<br>{sky}<br>Temperature: {temp}°C</div>'
+                    col.markdown(caption, unsafe_allow_html=True)
+                    col.image(image, use_column_width=True)
 
     except KeyError:
         st.write("Unknown place. Please enter a valid place..")
