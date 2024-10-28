@@ -62,7 +62,7 @@ if place:
         print(f"Current weather filepath: {current_weather_filepath}")
 
         # concat string with current weather details
-        local_weather_info = f"{current_time_str} {current_description} Temperature: {temperature_c:.2f} °c"
+        local_weather_info = f"{current_time_str} {current_description} Temperature: {temperature_c:}°c"
         print(local_weather_info)
 
         if option == "Temperature":
